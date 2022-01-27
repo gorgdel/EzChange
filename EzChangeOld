@@ -27,23 +27,77 @@ function confirm() {
 }
 
 
-# Enter username (for sake keep this the same as the new machine) 
+# Enter username
 pickCurrentUser() {
     read -p "What is the username of both machines: " currentUser
-    confirm "Username" "Is $currentUser correct?" currentIPaddress pickCurrentUser
+    confirm "Username" "Is $currentUser correct?" newIPAddress pickCurrentUser
 }
 
 # Get current IP address
 newIPAddress(){
-    echo "Your New Machines IPV4? :"
-    confirm "IP Address" "Is $ipAddress correct?" zshInstall newIPAddress
+    echo "Your New Machines IPV4? : " ipAddress
+    confirm "IP Address" "Is $ipAddress correct?" #TODO: newIPAddress
 }
 
 
-# SCP ZSH, BASHRC, VIMRC Theme to Default user
+##############################################
+#                  Copying!                  #
+##############################################
+
+
+# SCP ZSH, BASHRC, VIMRC to Default user
 home(){
-scp "/home/$currentUser/.zshrc" "/home/$currentUser/.bashrc" "/home/$currentUser/.vimrc" $currentUser@$ipAddress:"/home/$currentUser/"
+    scp "/home/$currentUser/.zshrc" "/home/$currentUser/.bashrc" "/home/$currentUser/.vimrc" $currentUser@$ipAddress:"/home/$currentUser/"
 }
 
-# SCP remmina
-scp -r 
+
+# SCP ZSH theme 
+zshTheme(){
+    scp "/home/$currentUser/.oh-my-zsh/themes/custom.zsh-theme" $currentUser@$ipAddress:"/home/$currentUser/.oh-my-zsh/themes/"
+}
+
+
+# SCP Remmina
+# TODO:
+
+
+# SCP .config
+# TODO:
+
+
+# Create Pacman Packages List and SCP
+pacman(){
+    pacman -Qqe > packages.txt
+    scp "packages.txt" $currentUser@$ipAddress:"/home/$currentUser/Desktop/"
+}
+
+
+##############################################
+#                Copying!(ROOT)              #
+##############################################
+
+
+# SCP Mint Icons 
+icons(){
+    scp -r "/usr/share/icons/" root@$ipAddress:"/usr/share/icons/" 
+}
+
+
+# SCP Mint themes
+themes(){
+    scp -r "/usr/share/themes/" root@$ipAddress:"/usr/share/themes/" 
+}
+
+
+# SCP lightdm config
+lightdm(){
+    scp -r "/etc/lightdm/lightdm.conf" $root@$ipAddress:"/etc/lightdm/"
+}
+
+
+# SCP Root ZSH Config 
+zshThemeRoot(){
+    scp "/root/.oh-my-zsh/themes/custom.zsh-theme" $root@$ipAddress:"/root/.oh-my-zsh/themes/"
+}
+
+pickCurrentUser

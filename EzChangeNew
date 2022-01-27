@@ -1,0 +1,45 @@
+#!/bin/bash
+
+##############################################
+# This script is for the new laptop/computer #
+##############################################
+
+# Check for Root 
+user=$(whoami)
+if [[ "$user" != "root" ]];
+then
+	echo "Error: Must be run as root or run with SUDO"
+	exit
+fi
+
+# Confirm
+function confirm() {
+    if (whiptail --title "$1" --yesno "$2" 8 78); then
+            $3
+      else
+            $4
+      fi
+}
+
+# Enter username
+pickCurrentUser() {
+    read -p "What is the username of both machines: " currentUser
+    confirm "Username" "Is $currentUser correct?" shift pickCurrentUser
+}
+
+
+
+# Install YAY 
+if [[ ! -d /opt/yay ]];
+then
+    pacman -S --needed git base-devel
+    cd /opt/
+    git clone https://aur.archlinux.org/yay.git
+    cd yay
+    makepkg -si
+fi
+
+
+# Install packages through YAY 
+yay -S --needed --noconfirm - < "/home/$currentUser/Desktop/packages.txt"
+
