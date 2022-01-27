@@ -1,0 +1,49 @@
+#!/bin/bash
+
+
+##############################################
+# This script is for the old laptop/computer #
+##############################################
+
+# Check for Root 
+
+user=$(whoami)
+if [[ "$user" != "root" ]];
+then
+	echo "Error: Must be run as root or run with SUDO"
+	exit
+fi
+
+# Check for Arch 
+# TODO:
+
+
+function confirm() {
+    if (whiptail --title "$1" --yesno "$2" 8 78); then
+            $3
+      else
+            $4
+      fi
+}
+
+
+# Enter username (for sake keep this the same as the new machine) 
+pickCurrentUser() {
+    read -p "What is the username of both machines: " currentUser
+    confirm "Username" "Is $currentUser correct?" currentIPaddress pickCurrentUser
+}
+
+# Get current IP address
+newIPAddress(){
+    echo "Your New Machines IPV4? :"
+    confirm "IP Address" "Is $ipAddress correct?" zshInstall newIPAddress
+}
+
+
+# SCP ZSH, BASHRC, VIMRC Theme to Default user
+home(){
+scp "/home/$currentUser/.zshrc" "/home/$currentUser/.bashrc" "/home/$currentUser/.vimrc" $currentUser@$ipAddress:"/home/$currentUser/"
+}
+
+# SCP remmina
+scp -r 
