@@ -1,0 +1,4 @@
+zsh themes - user/root
+cinnamon - config/themes/icons/applets/everything
+pacman list - yay installation
+minimal input, should just work
