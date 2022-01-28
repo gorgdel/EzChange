@@ -6,7 +6,6 @@
 ##############################################
 
 # Check for Root 
-
 user=$(whoami)
 if [[ "$user" != "root" ]];
 then
@@ -14,8 +13,20 @@ then
 	exit
 fi
 
+
+# Change ulimit for session
+ulimit -n 524000 
+
+
+# Create Packages File
+pacman -Qqe > /tmp/packages.txt
+
+
 # Check for Arch 
-# TODO:
+if (! uname -r | grep -q 'arch')
+then
+    exit
+fi 
 
 
 function confirm() {
@@ -29,17 +40,25 @@ function confirm() {
 
 # Enter username
 pickCurrentUser() {
-    read -p "What is the username of both machines: " currentUser
+    clear
+    read -p "Enter username of both machines: " currentUser
     confirm "Username" "Is $currentUser correct?" newIPAddress pickCurrentUser
 }
 
+
 # Get current IP address
 newIPAddress(){
-    echo "Your New Machines IPV4? : " ipAddress
-    confirm "IP Address" "Is $ipAddress correct?" #TODO: newIPAddress
+    clear
+    read -p "Your New Machines IPV4? : " ipAddress
+    confirm "IP Address" "Is $ipAddress correct?" start newIPAddress
 }
 
+start(){
+    confirm "Starting Default Copy" "Confirm to copy $currentUser profile to $ipAddress" default exit
+    clear
+}
 
+ 
 ##############################################
 #                  Copying!                  #
 ##############################################
@@ -58,7 +77,16 @@ zshTheme(){
 
 
 # SCP Remmina
-# TODO:
+remmina(){
+    scp /home/$currentUser/.local/share/remmina/* $currentUser@$ipAddress:"/home/$currentUser/.local/share/remmina/"
+}
+
+# SCP .fonts
+fonts(){
+    scp /home/$currentUser/.fonts/* $currentUser@ipAddress:"/home/$currentUser/.fonts/"
+}
+
+
 
 
 # SCP .config
@@ -91,13 +119,30 @@ themes(){
 
 # SCP lightdm config
 lightdm(){
-    scp -r "/etc/lightdm/lightdm.conf" $root@$ipAddress:"/etc/lightdm/"
+    scp "/etc/lightdm/lightdm.conf" $root@$ipAddress:"/etc/lightdm/"
 }
 
 
 # SCP Root ZSH Config 
 zshThemeRoot(){
     scp "/root/.oh-my-zsh/themes/custom.zsh-theme" $root@$ipAddress:"/root/.oh-my-zsh/themes/"
+}
+
+
+default(){
+    
+    home
+    clear && echo "ZSHRC, VIMRC, BASHRC transferred" && sleep 0.5
+
+    zshTheme
+    clear && echo "Oh My Zsh theme transferred" && sleep 0.5
+
+    remmina
+    clear && echo "Remmina profiles transferred" && sleep 0.5
+
+    pacman
+    clear && echo "Packages list created & transferred" && sleep 0.5
+
 }
 
 pickCurrentUser
