@@ -12,6 +12,13 @@ then
 	exit
 fi
 
+
+# Check for Arch 
+if (! uname -r | grep -q 'arch')
+then
+    exit
+fi 
+
 # Confirm
 function confirm() {
     if (whiptail --title "$1" --yesno "$2" 8 78); then
@@ -42,4 +49,3 @@ fi
 
 # Install packages through YAY 
 yay -S --needed --noconfirm - < "/home/$currentUser/Desktop/packages.txt"
-
