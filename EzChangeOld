@@ -2,7 +2,7 @@
 
 
 ##############################################
-# This script is for the old laptop/computer #
+# This script is for both old/new            #
 ##############################################
 
 # Check for Root 
@@ -16,6 +16,17 @@ fi
 
 # Change ulimit for session
 ulimit -n 524000 
+
+
+# Install YAY 
+if [[ ! -d /opt/yay ]];
+then
+    pacman -S --needed git base-devel
+    cd /opt/
+    git clone https://aur.archlinux.org/yay.git
+    cd yay
+    makepkg -si
+fi
 
 
 # Create Packages File
@@ -37,9 +48,31 @@ function confirm() {
       fi
 }
 
+function selectOption() {
+    clear
+    echo "Select an Option:"
+    echo "  (1) Transfer files from this machine to another machine"
+    echo "  (2) Install/move files on this machine"
+    echo "  (3) Exit"
+    read -p "Select an option [1]: " option
+    until [[ "$option" || "$option" =~ ^[1-3]$ ]]; do
+        echo "$option: invalid selection."
+        read -p "Select an option [1]: " option
+    done
+
+    if [[ $option == 1 ]]; then
+            #TODO:Start Function (transfer)
+            echo "1"
+        elif [[ $option == 2 ]]; then
+            #TODO:Start Function (install)
+            echo "2"
+        else 
+            exit
+        fi
+}
 
 # Enter username
-pickCurrentUser() {
+pickCurrentUser(){
     clear
     read -p "Enter username of both machines: " currentUser
     confirm "Username" "Is $currentUser correct?" newIPAddress pickCurrentUser
@@ -129,6 +162,29 @@ zshThemeRoot(){
 }
 
 
+
+###################################################
+#                Option 2: New Machine            #
+###################################################
+
+
+# Install packages through YAY 
+packages(){
+yay -S --needed --noconfirm - < "/home/$currentUser/Desktop/packages.txt"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 default(){
     
     home
@@ -145,4 +201,4 @@ default(){
 
 }
 
-pickCurrentUser
+selectOption
