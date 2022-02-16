@@ -29,10 +29,6 @@ then
 fi
 
 
-# Create Packages File
-pacman -Qqe > /tmp/packages.txt
-
-
 # Check for Arch 
 if (! uname -r | grep -q 'arch')
 then
@@ -152,7 +148,7 @@ themes(){
 
 # SCP lightdm config
 lightdm(){
-    scp "/etc/lightdm/lightdm.conf" $root@$ipAddress:"/etc/lightdm/"
+    scp "/etc/lightdm/lightdm.conf" root@$ipAddress:"/etc/lightdm/"
 }
 
 
@@ -196,8 +192,9 @@ default(){
     remmina
     clear && echo "Remmina profiles transferred" && sleep 0.5
 
-    pacman
-    clear && echo "Packages list created & transferred" && sleep 0.5
+    fonts
+    clear && echo "Remmina fonts transferred" && sleep 0.5
+
 
 }
 
